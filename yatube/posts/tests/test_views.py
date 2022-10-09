@@ -98,7 +98,7 @@ class PostViewTests(TestCase):
             reverse('posts:index')
         )
         self.assertEqual(
-            len(response.coistontext['page_obj'].object_list), 2
+            len(response.context['page_obj'].object_list), 2
         )
         first_object = response.context['page_obj'][0]
         if first_object.id != self.post.id:
