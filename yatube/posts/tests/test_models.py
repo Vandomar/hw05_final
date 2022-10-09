@@ -24,13 +24,13 @@ class PostModelTests(TestCase):
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
 
-    def test_models_have_correct_object_names_Group(self):
+    def test_models_have_correct_object_names_group(self):
         """Проверяем, что у моделей корректно работает __str__ Group."""
         group = PostModelTests.group
         expected_object_name = group.title
         self.assertEqual(expected_object_name, str(group))
 
-    def test_models_have_correct_object_names_Post(self):
+    def test_models_have_correct_object_names_post(self):
         """Проверяем, что у моделей корректно работает __str__ Post."""
         post = PostModelTests.post
         expected_object_name = post.text

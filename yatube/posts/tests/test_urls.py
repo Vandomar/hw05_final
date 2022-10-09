@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
-
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -60,7 +59,3 @@ class PostURLTests(TestCase):
             f'/posts/{self.post.id}/edit', follow=True
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    # def test_page_404(self):
-    #         response = self.guest_client.get('/qwerty12345/')
-    #         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

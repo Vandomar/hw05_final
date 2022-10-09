@@ -1,11 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.cache import cache
-
-from posts.models import Group, Post, Comment, Follow
+from posts.models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
@@ -91,7 +90,7 @@ class PostViewTests(TestCase):
             reverse('posts:index')
         )
         self.assertNotEqual(response_first.content, response_third.content)
-        
+
     def test_index_context(self):
         """Шаблон index сформирован с правильным контекстом."""
         cache.clear()
@@ -99,7 +98,7 @@ class PostViewTests(TestCase):
             reverse('posts:index')
         )
         self.assertEqual(
-            len(response.context['page_obj'].object_list), 2
+            len(response.coistontext['page_obj'].object_list), 2
         )
         first_object = response.context['page_obj'][0]
         if first_object.id != self.post.id:
