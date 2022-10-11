@@ -123,7 +123,6 @@ class TestFollow:
         image = tempfile.NamedTemporaryFile(suffix=".jpg").name
         Post.objects.create(text='Тестовый пост 4564534', author=user_1, image=image)
         Post.objects.create(text='Тестовый пост 354745', author=user_1, image=image)
-
         Post.objects.create(text='Тестовый пост 245456', author=user_2, image=image)
         Post.objects.create(text='Тестовый пост 9789', author=user_2, image=image)
         Post.objects.create(text='Тестовый пост 4574', author=user_2, image=image)

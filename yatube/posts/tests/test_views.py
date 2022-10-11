@@ -4,6 +4,7 @@ from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.models import Comment, Follow, Group, Post
 
 User = get_user_model()
@@ -78,7 +79,7 @@ class PostViewTests(TestCase):
         response_first = self.authorized_client.get(
             reverse('posts:index')
         )
-        first_object = Post.objects.get(id=1)
+        first_object = Post.objects.get(id=self.post.id)
         first_object.text = 'Измененный заголовок'
         first_object.save()
         response_second = self.authorized_client.get(
@@ -100,17 +101,15 @@ class PostViewTests(TestCase):
         self.assertEqual(
             len(response.context['page_obj'].object_list), 2
         )
-        first_object = response.context['page_obj'][0]
-        if first_object.id != self.post.id:
-            first_object = response.context['page_obj'][1]
-            post_id = first_object.id
-            post_text_0 = first_object.text
-            post_author_0 = first_object.author
-            post_image_0 = first_object.image
-            self.assertEqual(post_text_0, self.post.text)
-            self.assertEqual(post_author_0, self.post.author)
-            self.assertEqual(post_image_0, self.post.image)
-            self.assertEqual(post_id, self.post.id)
+        first_object = Post.objects.get(id=self.post.id)
+        post_id = first_object.id
+        post_text_0 = first_object.text
+        post_author_0 = first_object.author
+        post_image_0 = first_object.image
+        self.assertEqual(post_text_0, self.post.text)
+        self.assertEqual(post_author_0, self.post.author)
+        self.assertEqual(post_image_0, self.post.image)
+        self.assertEqual(post_id, self.post.id)
 
     def test_group_post_context(self):
         """Шаблон group_post сформирован с правильным контекстом."""
@@ -136,20 +135,17 @@ class PostViewTests(TestCase):
         self.assertEqual(
             len(response.context['page_obj'].object_list), 2
         )
-        first_object = response.context['page_obj'][0]
-        second_object = response.context['page_obj'][1]
-        if first_object.id != self.post.id:
-            first_object = response.context['page_obj'][1]
-            second_object = response.context['page_obj'][0]
-            post_id_0 = first_object.id
-            post_id_1 = second_object.id
-            author_post_0 = first_object.author
-            author_post_1 = second_object.author
-            post_image_0 = first_object.image
-            self.assertEqual(author_post_0, author_post_1)
-            self.assertEqual(post_id_0, self.post.id)
-            self.assertEqual(post_id_1, self.post_none_group.id)
-            self.assertEqual(post_image_0, self.post.image)
+        first_object = Post.objects.get(id=self.post.id)
+        second_object = Post.objects.get(id=self.post_none_group.id)
+        post_id_0 = first_object.id
+        post_id_1 = second_object.id
+        author_post_0 = first_object.author
+        author_post_1 = second_object.author
+        post_image_0 = first_object.image
+        self.assertEqual(author_post_0, author_post_1)
+        self.assertEqual(post_id_0, self.post.id)
+        self.assertEqual(post_id_1, self.post_none_group.id)
+        self.assertEqual(post_image_0, self.post.image)
 
     def test_post_detail_context(self):
         """Шаблон post_detail сформирован с правильным контекстом."""
@@ -226,20 +222,25 @@ class FollowerViewTests(TestCase):
                 'posts:profile_follow',
                 kwargs={'username': self.author.username}))
         self.assertEqual(Follow.objects.count(), 1)
+        self.assertTrue(Follow.objects.filter(
+            user=self.follower, author=self.author
+        ).exists())
 
     def test_un_follow(self):
         """ Проверка отписки от автора"""
-        self.authorized_client.get(
-            reverse(
-                'posts:profile_follow',
-                kwargs={'username': self.author.username}))
+        Follow.objects.create(
+            user=self.follower, author=self.author
+        )
         self.authorized_client.get(
             reverse(
                 'posts:profile_unfollow',
                 kwargs={'username': self.author.username}))
         self.assertEqual(Follow.objects.count(), 0)
+        self.assertFalse(Follow.objects.filter(
+            user=self.follower, author=self.author
+        ).exists())
 
-    def show_follow_post(self):
+    def test_show_follow_post(self):
         """Показывает посты в ленте подписок"""
         Follow.objects.create(user=self.follower,
                               author=self.author)
