@@ -127,8 +127,7 @@ class PostFormTests(TestCase):
         self.assertEqual(Post.objects.count(), post_count + 1)
         self.assertTrue(
             Post.objects.filter(
-                author=PostFormTests.post.author,
-                text=PostFormTests.post.text,
-                image=PostFormTests.post.image
+                text=form_data['text'],
+                image=form_data['image']
             ).exists()
         )

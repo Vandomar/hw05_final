@@ -235,7 +235,6 @@ class FollowerViewTests(TestCase):
             reverse(
                 'posts:profile_unfollow',
                 kwargs={'username': self.author.username}))
-        self.assertEqual(Follow.objects.count(), 0)
         self.assertFalse(Follow.objects.filter(
             user=self.follower, author=self.author
         ).exists())
